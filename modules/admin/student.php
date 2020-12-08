@@ -229,7 +229,10 @@ background: linear-gradient(to top, #6dd5ed, #2193b0); /* W3C, IE 10+/ Edge, Fir
             </div>
         
             <?php
+           
             if (isset($_POST['add'])) {
+                include('C:/xampp/htdocs/FinalCIMS-main/smtp/PHPMailerAutoload.php');
+               // $st_sid=$_POST['sid'];
                 $st_fname = $_POST['fname'];
                 $st_lname = $_POST['lname'];
                 $st_email = $_POST['email'];
@@ -254,18 +257,53 @@ background: linear-gradient(to top, #6dd5ed, #2193b0); /* W3C, IE 10+/ Edge, Fir
                 $st_mothername = $_POST['mothername'];
                 $st_motheroccu = $_POST['motheroccu'];
                 $st_mothermob = $_POST['mothermob'];
+                $mail=new PHPMailer(true);
+                $mail->isSMTP();
+                $mail->Host='smtp.gmail.com';
+                $mail->Port=587;
+                $mail->SMTPSecure="tls";
+                $mail->SMTPAuth=true;
+                $mail->Username="coachingcims@gmail.com";
+                $mail->Password="coaching1234";
+                $mail->SetFrom("coachingcims@gmail.com");
+                $mail->addAddress($st_email);
+                $mail->Subject="welcome to CIMS";
+                $messagee="Username= $sid  \n Password=  $st_fname";
+                $mail->Body=$messagee;
+                $mail->SMTPOptions=array('ssl'=>array(
+                    'verify_peer'=>false,
+                    'verify_peer_name'=>false,
+                    'allow_self_signed'=>false
+
+                ));
+                if($mail->send()){
+                    echo "mail sent";
+                }
+                else{
+                    echo "error";
+                }
+
+                
+            
+
+
+
+        
+
 
                 $sql_get_insert = "INSERT INTO students(sid, fname, lname, email, phone, address, district, state, postalcode, fee, scholarship, paidfee, status, course, batch, class, fathername, fathermob, fatheroccu, mothername, mothermob, motheroccu, `10mark`, `12mark`, preexam, preexamyear, preexammarks, center, mentor, timing, dateofreg, pid, dateofleft) VALUES ('$sid','$st_fname','$st_lname','$st_email','$st_mobile','$st_address','$st_city','$st_state','$st_pin','$st_fee','$st_schol','$paid_fee','yes','$course','$getch_get','$st_class','$st_fathername','$st_fathermob','$st_fatheroccu','$st_mothername','$st_mothermob','$st_motheroccu','$st_10mark','$st_12mark','$st_preexam','$st_preexamyear','$st_preexammarks','$center','$get_mentor','$get_timing','$st_dateofreg','$pid','0000-00-00')";
                 $sql_get_insert_quary = mysqli_query($conn, $sql_get_insert);
-                $insert_into_users = "INSERT INTO users (username, password, type) VALUES ('$sid','$sid','student')";
+                $insert_into_users = "INSERT INTO users (username, password, type) VALUES ('$sid','$st_fname','student')";
                 $insert_into_users_check = mysqli_query($conn,$insert_into_users);
-                $insert_into_users_p = "INSERT INTO users (username, password, type) VALUES ('$pid','$pid','parent')";
-                $insert_into_users_check_p = mysqli_query($conn,$insert_into_users_p);
-                if ($sql_get_insert_quary AND $insert_into_users_check AND $insert_into_users_check_p) {
+               // $insert_into_users_p = "INSERT INTO users (username, password, type) VALUES ('$pid','$pid','parent')";
+                //$insert_into_users_check_p = mysqli_query($conn,$insert_into_users_p);
+                if ($sql_get_insert_quary AND $insert_into_users_check) {
                     echo '<script>location.href="student.php?res=success"</script>';
                 } else {
                     echo '<script>location.href="student.php?res=fail"</script>';
                 }
+
+
 
             }
         }else{
